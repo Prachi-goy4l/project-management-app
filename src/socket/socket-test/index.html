@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Socket Test</title>
+</head>
+
+<body>
+    <h2>Socket.IO Test</h2>
+    <input id="message" placeholder="Type message">
+    <button onclick="sendMessage()">
+        Send
+    </button>
+    <hr>
+    <div id="messages"></div>
+
+</body>
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+<script>
+    const socket = io("http://localhost:5000");
+
+    socket.on("connect", () => {
+        console.log(socket.id);
+        socket.emit("hello", {
+            name: "Aman",
+            message: "Hello Server"
+        });
+        socket.emit("join-project", "project-101");
+    });
+
+    socket.on("welcome", (data) => {
+        console.log(data);
+    });
+
+    socket.on("disconnect", () => {
+        console.log("Disconnected");
+    });
+
+    function sendMessage() {
+        const input = document.getElementById("message");
+        socket.emit("send-message", {
+            text: input.value
+        });
+        input.value = "";
+    }
+    socket.on("new-message", (data) => {
+        const div = document.getElementById("messages");
+        div.innerHTML += `<p>${data.text}</p>`;
+    });
+</script>
+</html>
