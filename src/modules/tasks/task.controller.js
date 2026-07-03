@@ -1,7 +1,7 @@
 import Task from "./task.model.js";
 import Member from "../members/members.model.js";
 import Project from "../projects/project.model.js";
-
+import { getIO } from "../../socket/socket.js";
 export const createTask = async (req, res) => {
   try {
     const { title, description, priority, dueDate } = req.body;
@@ -21,6 +21,9 @@ export const createTask = async (req, res) => {
       priority,
       dueDate,
     });
+    const io = getIO();
+
+    io.to(`project:${task.projectId}`).emit("task-created", task);
     return res.status(201).json({
       success: true,
       message: "Task created successfully",
@@ -50,6 +53,7 @@ export const getTasks = async (req, res) => {
         },
       })
       .sort({ createdAt: -1 });
+
     return res.status(200).json({
       success: true,
       count: tasks.length,
@@ -132,15 +136,13 @@ export const updateTask = async (req, res) => {
       },
     ]);
 
+    const io = getIO();
+
+    io.to(`project:${task.projectId}`).emit("task-updated", updatedTask);
     return res.status(200).json({
       success: true,
       message: "Task updated successfully",
       data: updatedTask,
-    });
-    return res.status(200).json({
-      success: true,
-      message: "Task updated successfully",
-      data: task,
     });
   } catch (error) {
     return res.status(500).json({
@@ -197,6 +199,9 @@ export const assignTask = async (req, res) => {
       },
     ]);
 
+    const io = getIO();
+
+    io.to(`project:${task.projectId}`).emit("task-assigned", task);
     return res.status(200).json({
       success: true,
       message: "Task assigned successfully",
@@ -240,6 +245,9 @@ export const updateTaskStatus = async (req, res) => {
         },
       },
     ]);
+    const io = getIO();
+
+    io.to(`project:${task.projectId}`).emit("task-status-updated", task);
     return res.status(200).json({
       success: true,
       message: "Task status updated successfully",
@@ -258,10 +266,15 @@ export const archiveTask = async (req, res) => {
     const task = req.task;
     task.archived = true;
     await task.save();
+    const io = getIO();
+
+    io.to(`project:${task.projectId}`).emit("task-archived", {
+      taskId: task._id,
+    });
     return res.status(200).json({
-  success: true,
-  message: "Task archived successfully",
-});
+      success: true,
+      message: "Task archived successfully",
+    });
   } catch (error) {
     return res.status(500).json({
       success: false,
