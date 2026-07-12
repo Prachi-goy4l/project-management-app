@@ -1,5 +1,5 @@
 import ProtectedRoute from "@/components/ProtectedRoute";
-import { Dashboard } from "@/pages/auth/Dashboard";
+import { Dashboard } from "@/pages/Dashboard";
 import { LoginPage } from "@/pages/auth/LoginPage";
 import { RegisterPage } from "@/pages/auth/RegisterPage";
 import { Navigate } from "react-router-dom";

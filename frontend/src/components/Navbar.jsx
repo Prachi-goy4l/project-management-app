@@ -1,27 +1,26 @@
-import { useAuth } from "../context/AuthContext";
-import { Button } from "./ui/button";
+import { Bell, LogOut } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 
-export default function Navbar() {
-  const { user, logout } = useAuth();
+const Navbar = () => {
+  const { user } = useAuth();
 
   return (
     <header className="h-16 bg-white border-b flex items-center justify-between px-6">
-      <h1 className="text-xl font-bold">
-        Project Management
-      </h1>
+      <h2 className="text-xl font-semibold">
+        Welcome 👋
+      </h2>
 
       <div className="flex items-center gap-4">
-        <span>
-          Welcome, {user?.name}
+        <Bell className="cursor-pointer" />
+
+        <span className="font-medium">
+          {user?.name}
         </span>
 
-        <Button
-          variant="destructive"
-          onClick={logout}
-        >
-          Logout
-        </Button>
+        <LogOut className="cursor-pointer text-red-500" />
       </div>
     </header>
   );
-}
+};
+
+export default Navbar;
