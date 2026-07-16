@@ -3,10 +3,10 @@ import { NavLink } from "react-router-dom";
 import {
   LayoutDashboard,
   Building2,
-  FolderKanban,
-  CheckSquare,
-  Users,
-  Settings,
+  // FolderKanban,
+  // CheckSquare,
+  // Users,
+  // Settings,
 } from "lucide-react";
 
 const menuItems = [
@@ -19,26 +19,6 @@ const menuItems = [
     title: "Organizations",
     path: "/organizations",
     icon: Building2,
-  },
-  {
-    title: "Projects",
-    path: "/projects",
-    icon: FolderKanban,
-  },
-  {
-    title: "Tasks",
-    path: "/tasks",
-    icon: CheckSquare,
-  },
-  {
-    title: "Members",
-    path: "/members",
-    icon: Users,
-  },
-  {
-    title: "Settings",
-    path: "/settings",
-    icon: Settings,
   },
 ];
 

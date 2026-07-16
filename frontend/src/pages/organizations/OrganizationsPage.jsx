@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { deleteOrganization } from "@/services/organization.service";
 import { toast } from "sonner";
 import OrganizationDialog from "@/components/organizations/OrganizationDialog";
+import { Link } from "react-router-dom";
+
 export default function OrganizationsPage() {
   const [organizations, setOrganizations] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -88,6 +90,9 @@ export default function OrganizationsPage() {
                   </div>
 
                   <div className="flex justify-end gap-2">
+                    <Link to={`/organizations/${organization._id}/projects`}>
+                      <Button>View Projects</Button>
+                    </Link>
                     <OrganizationDialog
                       mode="edit"
                       organization={organization}

@@ -107,16 +107,7 @@ export const updateTask = async (req, res) => {
     if (description !== undefined) task.description = description;
     if (priority !== undefined) task.priority = priority;
     if (dueDate !== undefined) task.dueDate = dueDate;
-    if (
-      task.startDate &&
-      dueDate &&
-      new Date(dueDate) < new Date(task.startDate)
-    ) {
-      return res.status(400).json({
-        success: false,
-        message: "Due date cannot be before project start date",
-      });
-    }
+    
     await task.save();
     const updatedTask = await task.populate([
       {
@@ -170,7 +161,16 @@ export const assignTask = async (req, res) => {
       });
     }
     const project = await Project.findById(task.projectId);
+    const isProjectMember = project.members.some(
+      (id) => id.toString() === member._id.toString(),
+    );
 
+    if (!isProjectMember) {
+      return res.status(400).json({
+        success: false,
+        message: "Member is not part of this project",
+      });
+    }
     if (!project) {
       return res.status(404).json({
         success: false,

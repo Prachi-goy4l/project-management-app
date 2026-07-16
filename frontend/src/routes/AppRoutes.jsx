@@ -1,39 +1,49 @@
 import ProtectedRoute from "@/components/ProtectedRoute";
 import DashboardLayout from "@/layouts/DashboardLayout";
-import  Dashboard  from "@/pages/Dashboard";
+import Dashboard from "@/pages/Dashboard";
 import { LoginPage } from "@/pages/auth/LoginPage";
 import { RegisterPage } from "@/pages/auth/RegisterPage";
 import OrganizationsPage from "@/pages/organizations/OrganizationsPage";
+import ProjectsPage from "@/pages/projects/ProjectsPage";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-
+import MembersPage from "@/pages/members/MembersPage";
+import AcceptInvitePage from "@/pages/invites/AcceptInvitePage";
+import TasksPage from "@/pages/tasks/TasksPage";
 function AppRoutes() {
   return (
     <BrowserRouter>
-  <Routes>
+      <Routes>
+        <Route path="/" element={<Navigate to="/login" replace />} />
 
-    <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/login" element={<LoginPage />} />
 
-    <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
 
-    <Route path="/register" element={<RegisterPage />} />
-
-    <Route
-      element={
-        <ProtectedRoute>
-          <DashboardLayout />
-        </ProtectedRoute>
-      }
-    >
-      <Route path="/dashboard" element={<Dashboard />} />
-
-      <Route
-        path="/organizations"
-        element={<OrganizationsPage />}
-      />
-    </Route>
-
-  </Routes>
-</BrowserRouter>
+        <Route
+          element={
+            <ProtectedRoute>
+              <DashboardLayout />
+              <Route
+                path="/projects/:projectId/tasks"
+                element={<TasksPage />}
+              />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route
+            path="/organizations/:organizationId/projects"
+            element={<ProjectsPage />}
+          />
+          <Route
+            path="/organizations/:organizationId/members"
+            element={<MembersPage />}
+          />
+          <Route path="/accept-invite/:token" element={<AcceptInvitePage />} />
+          <Route path="/organizations" element={<OrganizationsPage />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
 }
 

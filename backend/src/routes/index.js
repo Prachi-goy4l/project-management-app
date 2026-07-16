@@ -6,6 +6,7 @@ import inviteRoutes from "../modules/invites/invite.routes.js";
 import projectRoutes from "../modules/projects/project.routes.js";
 import taskRoutes from "../modules/tasks/task.routes.js";
 import dashboardRoutes from "../modules/dashboard/dashboard.routes.js";
+import memberRoutes from "../modules/members/member.routes.js";
 
 const router = express.Router();
 
@@ -21,5 +22,5 @@ router.use("/tasks", taskRoutes);
 
 router.use("/dashboard", dashboardRoutes);
 
-
+router.use("/members", memberRoutes);
 export default router;

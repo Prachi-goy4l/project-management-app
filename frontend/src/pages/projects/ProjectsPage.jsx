@@ -1,0 +1,118 @@
+import { useEffect, useState } from "react";
+import { Navigate, useParams } from "react-router-dom";
+import ProjectDialog from "@/components/projects/ProjectDialog";
+import { getProjects, archiveProject } from "@/services/project.service";
+
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+
+import { toast } from "sonner";
+
+export default function ProjectsPage() {
+  const { organizationId } = useParams();
+
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadProjects();
+  }, [organizationId]);
+
+  const loadProjects = async () => {
+    try {
+      const data = await getProjects(organizationId);
+      setProjects(data.data);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleArchive = async (projectId) => {
+    const confirmed = window.confirm("Archive this project?");
+
+    if (!confirmed) return;
+
+    try {
+      await archiveProject(projectId);
+
+      toast.success("Project archived");
+
+      loadProjects();
+    } catch (error) {
+      console.error(error);
+      console.log(error.response?.data);
+      toast.error("Failed to archive project");
+    }
+  };
+
+  if (loading) {
+    return <h1>Loading...</h1>;
+  }
+
+  return (
+    <div className="p-6">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold">Projects</h1>
+
+        <ProjectDialog mode="create" onSuccess={loadProjects} />
+      </div>
+
+      {projects.length === 0 ? (
+        <div className="text-center py-16">
+          <h2 className="text-2xl font-semibold">No Projects Yet</h2>
+
+          <p className="text-muted-foreground mt-2">
+            Create your first project.
+          </p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-3 gap-6">
+          {projects.map((project) => (
+            <Card key={project._id}>
+              <CardContent className="p-6 space-y-4">
+                <div>
+                  <h2 className="text-xl font-bold">{project.name}</h2>
+
+                  <p className="text-muted-foreground">{project.description}</p>
+                </div>
+
+                <div>
+                  <p>Status : {project.status}</p>
+
+                  <p>Members : {project.members.length}</p>
+                </div>
+
+                <div className="flex justify-end gap-2">
+                  <Button
+                    onClick={() => Navigate(`/projects/${project._id}/tasks`)}
+                  >
+                    View Tasks
+                  </Button>
+                  
+                  <ProjectDialog
+                    mode="edit"
+                    project={project}
+                    onSuccess={loadProjects}
+                  />
+
+                  {project.status !== "Archived" ? (
+                    <Button
+                      variant="destructive"
+                      onClick={() => handleArchive(project._id)}
+                    >
+                      Archive
+                    </Button>
+                  ) : (
+                    <Button disabled>Archived</Button>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
