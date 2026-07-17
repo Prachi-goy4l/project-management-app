@@ -7,10 +7,12 @@ import { deleteOrganization } from "@/services/organization.service";
 import { toast } from "sonner";
 import OrganizationDialog from "@/components/organizations/OrganizationDialog";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export default function OrganizationsPage() {
   const [organizations, setOrganizations] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     loadOrganizations();
@@ -93,6 +95,14 @@ export default function OrganizationsPage() {
                     <Link to={`/organizations/${organization._id}/projects`}>
                       <Button>View Projects</Button>
                     </Link>
+                    <Button
+                      variant="secondary"
+                      onClick={() =>
+                        navigate(`/organizations/${organization._id}/members`)
+                      }
+                    >
+                      View Members
+                    </Button>
                     <OrganizationDialog
                       mode="edit"
                       organization={organization}

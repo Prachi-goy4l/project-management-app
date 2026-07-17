@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Navigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import ProjectDialog from "@/components/projects/ProjectDialog";
 import { getProjects, archiveProject } from "@/services/project.service";
 
@@ -10,7 +10,7 @@ import { toast } from "sonner";
 
 export default function ProjectsPage() {
   const { organizationId } = useParams();
-
+  const navigate = useNavigate();
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -86,11 +86,15 @@ export default function ProjectsPage() {
 
                 <div className="flex justify-end gap-2">
                   <Button
-                    onClick={() => Navigate(`/projects/${project._id}/tasks`)}
+                    onClick={() =>
+                      navigate(
+                        `/organizations/${organizationId}/projects/${project._id}/tasks`,
+                      )
+                    }
                   >
                     View Tasks
                   </Button>
-                  
+
                   <ProjectDialog
                     mode="edit"
                     project={project}

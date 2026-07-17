@@ -18,18 +18,21 @@ function AppRoutes() {
         <Route path="/login" element={<LoginPage />} />
 
         <Route path="/register" element={<RegisterPage />} />
-
+        <Route
+      path="/accept-invite/:token"
+      element={<AcceptInvitePage />}
+    />
         <Route
           element={
             <ProtectedRoute>
               <DashboardLayout />
-              <Route
-                path="/projects/:projectId/tasks"
-                element={<TasksPage />}
-              />
             </ProtectedRoute>
           }
         >
+          <Route
+            path="/organizations/:organizationId/projects/:projectId/tasks"
+            element={<TasksPage />}
+          />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route
             path="/organizations/:organizationId/projects"

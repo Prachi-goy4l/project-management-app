@@ -32,12 +32,17 @@ export default function InviteDialog({ onSuccess }) {
     try {
       setLoading(true);
 
-      await inviteMember(organizationId, {
-        email,
-        role,
-      });
+      const data = await inviteMember(organizationId, {
+  email,
+  role,
+});
 
-      toast.success("Invitation sent");
+toast.success("Invitation sent");
+
+window.prompt(
+  "Copy this invitation link:",
+  data.inviteLink
+);
 
       setEmail("");
       setRole("Member");

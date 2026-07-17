@@ -1,14 +1,11 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-
-// import { createTask, updateTask } from "@/services/Task.service";
-
+import { createTask, updateTask, assignTask } from "@/services/task.service";
+import { getMembers } from "@/services/member.service";
 import { toast } from "sonner";
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-
 import {
   Dialog,
   DialogContent,
@@ -16,58 +13,81 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { createTask, updateTask } from "@/services/task.service";
 
 const TaskDialog = ({ mode = "create", task = null, onSuccess }) => {
-  const { organizationId } = useParams();
-
-  const [name, setName] = useState("");
+  const { projectId, organizationId } = useParams();
+  const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
-
+  const [priority, setPriority] = useState("Medium");
+  const [dueDate, setDueDate] = useState("");
+  const [assignedTo, setAssignedTo] = useState("");
+  const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
+    loadMembers();
+  }, []);
+
+  const loadMembers = async () => {
+    try {
+      const data = await getMembers(organizationId);
+      setMembers(data.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
     if (mode === "edit" && task) {
-      setName(task.name);
+      setTitle(task.title);
       setDescription(task.description || "");
+      setPriority(task.priority || "Medium");
 
-      setStartDate(task.startDate ? task.startDate.substring(0, 10) : "");
+      setDueDate(task.dueDate ? task.dueDate.substring(0, 10) : "");
 
-      setEndDate(task.endDate ? task.endDate.substring(0, 10) : "");
+      setAssignedTo(task.assignedTo?._id || "");
     } else {
-      setName("");
+      setTitle("");
       setDescription("");
-      setStartDate("");
-      setEndDate("");
+      setPriority("Medium");
+      setDueDate("");
+      setAssignedTo("");
     }
   }, [mode, task]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("SUBMIT CLICKED");
+
     try {
       setLoading(true);
 
+      let response;
+
       if (mode === "create") {
-        await createTask({
-          name,
+        response = await createTask(projectId, {
+          title,
           description,
-          organizationId,
-          startDate,
-          endDate,
+          priority,
+          dueDate,
         });
 
-        toast.success("Project created");
+        if (assignedTo) {
+          await assignTask(response.data._id, assignedTo);
+        }
+
+        toast.success("Task created");
       } else {
         await updateTask(task._id, {
-          name,
+          title,
           description,
-          startDate,
-          endDate,
+          priority,
+          dueDate,
         });
+
+        if (assignedTo) {
+          await assignTask(task._id, assignedTo);
+        }
 
         toast.success("Task updated");
       }
@@ -101,9 +121,9 @@ const TaskDialog = ({ mode = "create", task = null, onSuccess }) => {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label>Name</Label>
+            <Label>Title</Label>
 
-            <Input value={name} onChange={(e) => setName(e.target.value)} />
+            <Input value={title} onChange={(e) => setTitle(e.target.value)} />
           </div>
 
           <div>
@@ -116,23 +136,46 @@ const TaskDialog = ({ mode = "create", task = null, onSuccess }) => {
           </div>
 
           <div>
-            <Label>Start Date</Label>
+            <Label>Priority</Label>
+
+            <select
+              className="w-full border rounded-md p-2"
+              value={priority}
+              onChange={(e) => setPriority(e.target.value)}
+            >
+              <option>Low</option>
+              <option>Medium</option>
+              <option>High</option>
+              <option>Urgent</option>
+            </select>
+          </div>
+
+          <div>
+            <Label>Due Date</Label>
 
             <Input
               type="date"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
+              value={dueDate}
+              onChange={(e) => setDueDate(e.target.value)}
             />
           </div>
 
           <div>
-            <Label>End Date</Label>
+            <Label>Assign Member</Label>
 
-            <Input
-              type="date"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-            />
+            <select
+              className="w-full border rounded-md p-2"
+              value={assignedTo}
+              onChange={(e) => setAssignedTo(e.target.value)}
+            >
+              <option value="">Unassigned</option>
+
+              {members.map((member) => (
+                <option key={member._id} value={member._id}>
+                  {member.userId?.name}
+                </option>
+              ))}
+            </select>
           </div>
 
           <Button type="submit" className="w-full" disabled={loading}>

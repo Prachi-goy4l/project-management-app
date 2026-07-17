@@ -21,8 +21,8 @@ export default function TasksPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadTasks();
-  }, []);
+  loadTasks();
+}, [projectId]);
 
   const loadTasks = async () => {
     try {
