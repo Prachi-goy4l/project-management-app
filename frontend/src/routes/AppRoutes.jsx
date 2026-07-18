@@ -18,10 +18,7 @@ function AppRoutes() {
         <Route path="/login" element={<LoginPage />} />
 
         <Route path="/register" element={<RegisterPage />} />
-        <Route
-      path="/accept-invite/:token"
-      element={<AcceptInvitePage />}
-    />
+        <Route path="/accept-invite/:token" element={<AcceptInvitePage />} />
         <Route
           element={
             <ProtectedRoute>
@@ -33,7 +30,10 @@ function AppRoutes() {
             path="/organizations/:organizationId/projects/:projectId/tasks"
             element={<TasksPage />}
           />
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route
+            path="/organizations/:organizationId/dashboard"
+            element={<Dashboard />}
+          />{" "}
           <Route
             path="/organizations/:organizationId/projects"
             element={<ProjectsPage />}

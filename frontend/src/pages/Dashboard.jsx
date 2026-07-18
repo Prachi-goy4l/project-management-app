@@ -1,25 +1,37 @@
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+
 import StatsCard from "@/components/dashboard/StatsCard";
+import { getOverview } from "@/services/dashboard.service";
 
-const stats = [
-  {
-    title: "Projects",
-    value: 12,
-  },
-  {
-    title: "Tasks",
-    value: 48,
-  },
-  {
-    title: "Members",
-    value: 7,
-  },
-  {
-    title: "Pending",
-    value: 9,
-  },
-];
+export default function Dashboard() {
+  const { organizationId } = useParams();
 
-const Dashboard = () => {
+  const [stats, setStats] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+  if (organizationId) {
+    loadDashboard();
+  }
+}, [organizationId]);
+
+  const loadDashboard = async () => {
+    try {
+      const data = await getOverview(organizationId);
+
+      setStats(data.data);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return <h1>Loading...</h1>;
+  }
+
   return (
     <div className="space-y-6">
       <div>
@@ -33,16 +45,26 @@ const Dashboard = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map((item) => (
-          <StatsCard
-            key={item.title}
-            title={item.title}
-            value={item.value}
-          />
-        ))}
+        <StatsCard
+          title="Projects"
+          value={stats.projects}
+        />
+
+        <StatsCard
+          title="Tasks"
+          value={stats.totalTasks}
+        />
+
+        <StatsCard
+          title="Completed"
+          value={stats.completedTasks}
+        />
+
+        <StatsCard
+          title="Pending"
+          value={stats.pendingTasks}
+        />
       </div>
     </div>
   );
-};
-
-export default Dashboard;
+}

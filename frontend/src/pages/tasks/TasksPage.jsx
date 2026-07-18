@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-
+import socket from "@/lib/socket";
 import {
   getTasks,
   archiveTask,
@@ -22,6 +22,27 @@ export default function TasksPage() {
 
   useEffect(() => {
   loadTasks();
+}, [projectId]);
+useEffect(() => {
+  socket.connect();
+
+  socket.emit("join-project", projectId);
+
+  socket.on("task-created", loadTasks);
+  socket.on("task-updated", loadTasks);
+  socket.on("task-status-updated", loadTasks);
+  socket.on("task-assigned", loadTasks);
+  socket.on("task-archived", loadTasks);
+
+  return () => {
+    socket.off("task-created", loadTasks);
+    socket.off("task-updated", loadTasks);
+    socket.off("task-status-updated", loadTasks);
+    socket.off("task-assigned", loadTasks);
+    socket.off("task-archived", loadTasks);
+
+    socket.disconnect();
+  };
 }, [projectId]);
 
   const loadTasks = async () => {

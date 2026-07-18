@@ -29,7 +29,7 @@ export function LoginPage() {
     });
 
     if (result.success) {
-      navigate("/dashboard");
+      navigate("/organizations");
     } else {
       alert(result.message);
     }

@@ -22,7 +22,7 @@ export default function AcceptInvitePage() {
 
       toast.success("Invitation accepted");
 
-      navigate("/dashboard");
+      navigate("/organizations");
     } catch (error) {
       console.error(error);
 

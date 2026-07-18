@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { deleteOrganization } from "@/services/organization.service";
 import { toast } from "sonner";
 import OrganizationDialog from "@/components/organizations/OrganizationDialog";
-import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
 export default function OrganizationsPage() {
@@ -91,30 +90,51 @@ export default function OrganizationsPage() {
                     </p>
                   </div>
 
-                  <div className="flex justify-end gap-2">
-                    <Link to={`/organizations/${organization._id}/projects`}>
-                      <Button>View Projects</Button>
-                    </Link>
-                    <Button
-                      variant="secondary"
-                      onClick={() =>
-                        navigate(`/organizations/${organization._id}/members`)
-                      }
-                    >
-                      View Members
-                    </Button>
-                    <OrganizationDialog
-                      mode="edit"
-                      organization={organization}
-                      onSuccess={loadOrganizations}
-                    />
+                  <div className="space-y-3 pt-2">
+                    <div className="flex flex-wrap gap-2">
+                      <Button
+                        onClick={() =>
+                          navigate(
+                            `/organizations/${organization._id}/dashboard`,
+                          )
+                        }
+                      >
+                        Dashboard
+                      </Button>
 
-                    <Button
-                      variant="destructive"
-                      onClick={() => handleDelete(organization._id)}
-                    >
-                      Delete
-                    </Button>
+                      <Button
+                        onClick={() =>
+                          navigate(
+                            `/organizations/${organization._id}/projects`,
+                          )
+                        }
+                      >
+                        Projects
+                      </Button>
+
+                      <Button
+                        onClick={() =>
+                          navigate(`/organizations/${organization._id}/members`)
+                        }
+                      >
+                        Members
+                      </Button>
+                    </div>
+
+                    <div className="flex gap-2">
+                      <OrganizationDialog
+                        mode="edit"
+                        organization={organization}
+                        onSuccess={loadOrganizations}
+                      />
+
+                      <Button
+                        variant="destructive"
+                        onClick={() => handleDelete(organization._id)}
+                      >
+                        Delete
+                      </Button>
+                    </div>
                   </div>
                 </CardContent>
               </Card>

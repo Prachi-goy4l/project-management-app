@@ -1,20 +1,20 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useParams } from "react-router-dom";
 
 import {
   LayoutDashboard,
   Building2,
-  // FolderKanban,
+  FolderKanban,
   // CheckSquare,
-  // Users,
+  Users,
   // Settings,
 } from "lucide-react";
 
+
+
+const Sidebar = () => {
+  const { organizationId } = useParams();
+
 const menuItems = [
-  {
-    title: "Dashboard",
-    path: "/dashboard",
-    icon: LayoutDashboard,
-  },
   {
     title: "Organizations",
     path: "/organizations",
@@ -22,7 +22,25 @@ const menuItems = [
   },
 ];
 
-const Sidebar = () => {
+if (organizationId) {
+  menuItems.push(
+    {
+      title: "Dashboard",
+      path: `/organizations/${organizationId}/dashboard`,
+      icon: LayoutDashboard,
+    },
+    {
+      title: "Projects",
+      path: `/organizations/${organizationId}/projects`,
+      icon: FolderKanban,
+    },
+    {
+      title: "Members",
+      path: `/organizations/${organizationId}/members`,
+      icon: Users,
+    }
+  );
+}
   return (
     <aside className="w-64 bg-white border-r">
       <div className="p-6">
