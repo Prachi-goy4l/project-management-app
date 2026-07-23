@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 import StatsCard from "@/components/dashboard/StatsCard";
@@ -28,23 +28,35 @@ export default function Dashboard() {
 
   const [loading, setLoading] = useState(true);
 
-  const loadDashboard = useCallback(async () => {
-    try {
-      const data = await getOverview(organizationId);
-
-      setStats(data.data);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  }, [organizationId]);
-
   useEffect(() => {
-    if (organizationId) {
-      loadDashboard();
+    let cancelled = false;
+
+    if (!organizationId) {
+      return;
     }
-  }, [loadDashboard, organizationId]);
+
+    const loadDashboard = async () => {
+      try {
+        const data = await getOverview(organizationId);
+
+        if (!cancelled) {
+          setStats(data.data);
+        }
+      } catch (error) {
+        console.error(error);
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    };
+
+    loadDashboard();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [organizationId]);
 
   if (loading) {
     return <h1>Loading...</h1>;

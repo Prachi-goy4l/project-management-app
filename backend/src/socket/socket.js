@@ -32,6 +32,12 @@ export const initSocket = (server) => {
       io.to("project:project-101").emit("new-message", data);
     });
 
+    socket.on("leave-project", (projectId) => {
+      socket.leave(`project:${projectId}`);
+
+      console.log(`${socket.id} left project:${projectId}`);
+    });
+
     socket.on("disconnect", () => {
       console.log("🔴 Disconnected:", socket.id);
     });

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import socket from "@/lib/socket";
 import {
@@ -20,10 +20,47 @@ export default function TasksPage() {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    loadTasks();
+  // Used for refreshes after create/edit/archive/status update
+  const loadTasks = useCallback(async () => {
+    if (!projectId) return;
+
+    try {
+      const data = await getTasks(projectId);
+      setTasks(data.data);
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to load tasks");
+    }
   }, [projectId]);
+
+  //for initial lode
   useEffect(() => {
+    if (!projectId) return;
+
+    let mounted = true;
+
+    const fetchTasks = async () => {
+      try {
+        const data = await getTasks(projectId);
+
+        if (mounted) {
+          setTasks(data.data);
+        }
+      } catch (error) {
+        console.error(error);
+
+        if (mounted) {
+          toast.error("Failed to load tasks");
+        }
+      } finally {
+        if (mounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchTasks();
+
     const taskEvents = [
       "task-created",
       "task-updated",
@@ -31,8 +68,6 @@ export default function TasksPage() {
       "task-assigned",
       "task-archived",
     ];
-
-    loadTasks();
 
     socket.connect();
     socket.emit("join-project", projectId);
@@ -42,25 +77,16 @@ export default function TasksPage() {
     });
 
     return () => {
+      mounted = false;
+
       taskEvents.forEach((event) => {
         socket.off(event, loadTasks);
       });
 
+      socket.emit("leave-project", projectId);
       socket.disconnect();
     };
-  }, [projectId]);
-
-  const loadTasks = async () => {
-    try {
-      const data = await getTasks(projectId);
-
-      setTasks(data.data);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [projectId, loadTasks]);
 
   const handleArchive = async (id) => {
     if (!window.confirm("Archive this task?")) return;
@@ -148,8 +174,8 @@ export default function TasksPage() {
                         task.status === "Todo"
                           ? "In Progress"
                           : task.status === "In Progress"
-                            ? "Done"
-                            : "Todo",
+                          ? "Done"
+                          : "Todo"
                       )
                     }
                   >
