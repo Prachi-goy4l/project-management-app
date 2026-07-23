@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useParams } from "react-router-dom";
 
 import { inviteMember } from "@/services/invite.service";
@@ -26,23 +26,23 @@ export default function InviteDialog({ onSuccess }) {
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
 
     try {
       setLoading(true);
 
       const data = await inviteMember(organizationId, {
-  email,
-  role,
-});
+        email,
+        role,
+      });
 
-toast.success("Invitation sent");
+      toast.success("Invitation sent");
 
-window.prompt(
-  "Copy this invitation link:",
-  data.inviteLink
-);
+      window.prompt(
+        "Copy this invitation link:",
+        data.inviteLink
+      );
 
       setEmail("");
       setRole("Member");
@@ -60,7 +60,7 @@ window.prompt(
     } finally {
       setLoading(false);
     }
-  };
+  }, [email, onSuccess, organizationId, role]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

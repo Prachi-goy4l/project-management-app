@@ -21,29 +21,34 @@ export default function TasksPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-  loadTasks();
-}, [projectId]);
-useEffect(() => {
-  socket.connect();
+    loadTasks();
+  }, [projectId]);
+  useEffect(() => {
+    const taskEvents = [
+      "task-created",
+      "task-updated",
+      "task-status-updated",
+      "task-assigned",
+      "task-archived",
+    ];
 
-  socket.emit("join-project", projectId);
+    loadTasks();
 
-  socket.on("task-created", loadTasks);
-  socket.on("task-updated", loadTasks);
-  socket.on("task-status-updated", loadTasks);
-  socket.on("task-assigned", loadTasks);
-  socket.on("task-archived", loadTasks);
+    socket.connect();
+    socket.emit("join-project", projectId);
 
-  return () => {
-    socket.off("task-created", loadTasks);
-    socket.off("task-updated", loadTasks);
-    socket.off("task-status-updated", loadTasks);
-    socket.off("task-assigned", loadTasks);
-    socket.off("task-archived", loadTasks);
+    taskEvents.forEach((event) => {
+      socket.on(event, loadTasks);
+    });
 
-    socket.disconnect();
-  };
-}, [projectId]);
+    return () => {
+      taskEvents.forEach((event) => {
+        socket.off(event, loadTasks);
+      });
+
+      socket.disconnect();
+    };
+  }, [projectId]);
 
   const loadTasks = async () => {
     try {
@@ -92,14 +97,9 @@ useEffect(() => {
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">
-          Tasks
-        </h1>
+        <h1 className="text-3xl font-bold">Tasks</h1>
 
-        <TaskDialog
-          projectId={projectId}
-          onSuccess={loadTasks}
-        />
+        <TaskDialog projectId={projectId} onSuccess={loadTasks} />
       </div>
 
       {tasks.length === 0 ? (
@@ -110,13 +110,9 @@ useEffect(() => {
             <Card key={task._id}>
               <CardContent className="p-6 space-y-4">
                 <div>
-                  <h2 className="font-bold text-xl">
-                    {task.title}
-                  </h2>
+                  <h2 className="font-bold text-xl">{task.title}</h2>
 
-                  <p className="text-gray-500">
-                    {task.description}
-                  </p>
+                  <p className="text-gray-500">{task.description}</p>
                 </div>
 
                 <div className="text-sm space-y-1">
@@ -125,14 +121,11 @@ useEffect(() => {
                   <p>Priority: {task.priority}</p>
 
                   <p>
-                    Assigned:
-                    {" "}
-                    {task.assignedTo?.userId?.name || "Unassigned"}
+                    Assigned: {task.assignedTo?.userId?.name || "Unassigned"}
                   </p>
 
                   <p>
-                    Due:
-                    {" "}
+                    Due:{" "}
                     {task.dueDate
                       ? new Date(task.dueDate).toLocaleDateString()
                       : "-"}
@@ -155,8 +148,8 @@ useEffect(() => {
                         task.status === "Todo"
                           ? "In Progress"
                           : task.status === "In Progress"
-                          ? "Done"
-                          : "Todo"
+                            ? "Done"
+                            : "Todo",
                       )
                     }
                   >
@@ -165,9 +158,7 @@ useEffect(() => {
 
                   <Button
                     variant="destructive"
-                    onClick={() =>
-                      handleArchive(task._id)
-                    }
+                    onClick={() => handleArchive(task._id)}
                   >
                     Archive
                   </Button>

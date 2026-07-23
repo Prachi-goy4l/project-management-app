@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   createOrganization,
   updateOrganization,
@@ -38,7 +38,7 @@ const OrganizationDialog = ({
     }
   }, [mode, organization]);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
     console.log("SUBMIT CLICKED");
 
@@ -74,7 +74,7 @@ const OrganizationDialog = ({
     } finally {
       setLoading(false);
     }
-  };
+  }, [industry, mode, name, onSuccess, organization]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

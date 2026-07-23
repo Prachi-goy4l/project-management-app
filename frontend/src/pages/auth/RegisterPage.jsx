@@ -3,10 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 
 import { register } from "@/services/auth.service";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle, Input, Label, Button } from "@/components/ui";
 
 import { toast } from "sonner";
 

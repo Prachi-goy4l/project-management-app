@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { createTask, updateTask, assignTask } from "@/services/task.service";
 import { getMembers } from "@/services/member.service";
@@ -25,18 +25,18 @@ const TaskDialog = ({ mode = "create", task = null, onSuccess }) => {
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
 
-  useEffect(() => {
-    loadMembers();
-  }, []);
-
-  const loadMembers = async () => {
+  const loadMembers = useCallback(async () => {
     try {
       const data = await getMembers(organizationId);
       setMembers(data.data);
     } catch (error) {
       console.error(error);
     }
-  };
+  }, [organizationId]);
+
+  useEffect(() => {
+    loadMembers();
+  }, [loadMembers]);
 
   useEffect(() => {
     if (mode === "edit" && task) {
@@ -56,7 +56,7 @@ const TaskDialog = ({ mode = "create", task = null, onSuccess }) => {
     }
   }, [mode, task]);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
 
     try {
@@ -102,7 +102,7 @@ const TaskDialog = ({ mode = "create", task = null, onSuccess }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [assignedTo, description, dueDate, mode, onSuccess, priority, projectId, task, title]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
