@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { createTask, updateTask, assignTask } from "@/services/task.service";
 import { getMembers } from "@/services/member.service";
@@ -14,8 +14,9 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-const TaskDialog = ({ mode = "create", task = null, onSuccess }) => {
-  const { projectId, organizationId } = useParams();
+const TaskDialog = ({ mode = "create", task = null, onSuccess, organizationId: organizationIdProp }) => {
+  const { projectId, organizationId: organizationIdFromParams } = useParams();
+  const organizationId = organizationIdProp ?? organizationIdFromParams;
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [priority, setPriority] = useState("Medium");
@@ -24,15 +25,22 @@ const TaskDialog = ({ mode = "create", task = null, onSuccess }) => {
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
+  const latestRequestIdRef = useRef(0);
 
   useEffect(() => {
-    let cancelled = false;
+    if (!organizationId) {
+      setMembers([]);
+      return;
+    }
+
+    const requestId = ++latestRequestIdRef.current;
+    setMembers([]);
 
     const loadMembers = async () => {
       try {
         const data = await getMembers(organizationId);
 
-        if (!cancelled) {
+        if (requestId === latestRequestIdRef.current) {
           setMembers(data.data);
         }
       } catch (error) {
@@ -41,10 +49,6 @@ const TaskDialog = ({ mode = "create", task = null, onSuccess }) => {
     };
 
     loadMembers();
-
-    return () => {
-      cancelled = true;
-    };
   }, [organizationId]);
 
   useEffect(() => {

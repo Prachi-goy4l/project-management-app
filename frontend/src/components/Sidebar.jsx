@@ -12,7 +12,7 @@ import {
 
 
 const Sidebar = () => {
-  const { organizationId } = useParams();
+  const { organizationId,} = useParams();
 
 const menuItems = [
   {
@@ -38,7 +38,8 @@ if (organizationId) {
       title: "Members",
       path: `/organizations/${organizationId}/members`,
       icon: Users,
-    }
+    },
+    
   );
 }
   return (

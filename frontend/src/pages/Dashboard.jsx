@@ -80,9 +80,9 @@ export default function Dashboard() {
     </div>
   );
 }
-//usecallback hook 
+//usecallback hook - done
 //map in statscard - done
 //project create button refactor - done
+//taskpage socket and useeffect - done
 //acceptinvite
 //rechart package (react chart oackages)
-//taskpage socket and useeffect -> done

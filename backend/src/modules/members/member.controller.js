@@ -5,7 +5,7 @@ export const getOrganizationMembers = async (req, res) => {
     const { organizationId } = req.params;
 
     const members = await Member.find({
-      organizationId,
+      organizationId, 
     })
       .populate("userId", "name email")
       .sort({ createdAt: 1 });
