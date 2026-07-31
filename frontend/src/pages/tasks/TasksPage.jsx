@@ -13,6 +13,7 @@ import {
   getTasks,
   archiveTask,
   updateTaskStatus,
+  reorderTasks,
 } from "@/services/task.service";
 import KanbanBoard from "@/components/tasks/KanbanBoard";
 import TaskDialog from "@/components/tasks/TaskDialog";
@@ -126,9 +127,11 @@ export default function TasksPage() {
   };
 
   const filteredTasks = tasks.filter((task) => {
+    const searchTerm = search.toLowerCase();
     const matchesSearch =
-      task.title.toLowerCase().includes(search.toLowerCase()) ||
-      task.description?.toLowerCase().includes(search.toLowerCase());
+      task.title?.toLowerCase().includes(searchTerm) ||
+      task.description?.toLowerCase().includes(searchTerm) ||
+      task.taskCode?.toLowerCase().includes(searchTerm);
 
     const matchesStatus =
       statusFilter === "All" || task.status === statusFilter;
@@ -146,6 +149,7 @@ export default function TasksPage() {
   const [view, setView] = useState("table");
 
   const tableHeaders = [
+    "Task ID",
     "Task",
     "Status",
     "Priority",
@@ -235,6 +239,9 @@ export default function TasksPage() {
             <TableBody>
               {filteredTasks.map((task) => (
                 <TableRow key={task._id}>
+                  <TableCell className="font-mono text-blue-600 font-semibold">
+                    {task.taskCode}
+                  </TableCell>
                   <TableCell className="font-medium">
                     <div>
                       <p>{task.title}</p>
@@ -303,9 +310,13 @@ export default function TasksPage() {
         </div>
       ) : (
         <KanbanBoard
+          projectId={projectId}
           tasks={filteredTasks}
           setTasks={setTasks}
           onStatusChange={updateTaskStatus}
+          onReorder={(currentProjectId, items) =>
+            reorderTasks(currentProjectId, items)
+          }
         />
       )}
     </div>

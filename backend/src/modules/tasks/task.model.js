@@ -7,6 +7,10 @@ const taskSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    taskCode: {
+      type: String,
+      unique: true,
+    },
 
     description: {
       type: String,
@@ -43,6 +47,11 @@ const taskSchema = new mongoose.Schema(
       default: "Medium",
     },
 
+    order: {
+  type: Number,
+  default: 0,
+},
+
     dueDate: {
       type: Date,
     },
@@ -54,7 +63,7 @@ const taskSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 export default mongoose.model("Task", taskSchema);

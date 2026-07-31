@@ -59,3 +59,14 @@ export const getTaskById = async (taskId) => {
 
   return response.data;
 };
+
+export const reorderTasks = async (projectId, tasks) => {
+  const response = await api.patch(
+    `/tasks/project/${projectId}/reorder`,
+    {
+      tasks,
+    }
+  );
+
+  return response.data;
+};

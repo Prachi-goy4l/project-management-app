@@ -1,6 +1,7 @@
 import Project from "./project.model.js";
 import Organization from "../organizations/organization.model.js";
 import Member from "../members/members.model.js";
+import Task from "../tasks/task.model.js";
 
 //createProject
 export const createProject = async (req, res) => {
@@ -22,16 +23,39 @@ export const createProject = async (req, res) => {
       });
     }
 
+    // Generate project key
+let baseKey = name
+  .replace(/[^a-zA-Z0-9]/g, "")
+  .substring(0, 3)
+  .toUpperCase();
+
+if (!baseKey) {
+  baseKey = "PRJ";
+}
+
+let projectKey = baseKey;
+let counter = 1;
+
+while (await Project.exists({ projectKey })) {
+  projectKey = `${baseKey}${counter}`;
+  counter++;
+}
+
     // Create the Project
     const project = await Project.create({
-      name,
-      description,
-      organizationId: req.organization._id,
-      createdBy: req.user.id,
-      members: [req.member._id],
-      startDate,
-      endDate,
-    });
+  name,
+  description,
+  organizationId: req.organization._id,
+  createdBy: req.user.id,
+
+  members: [req.member._id],
+
+  startDate,
+  endDate,
+
+  projectKey,
+  taskSequence: 0,
+});
 
     res.status(201).json({
       success: true,
@@ -263,6 +287,113 @@ export const removeProjectMember = async (req, res) => {
       data: project,
     });
 
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// project dashboard
+export const getProjectAnalytics = async (req, res) => {
+  try {
+    const project = req.project;
+
+    const tasks = await Task.find({
+      projectId: project._id,
+      archived: false,
+    }).populate({
+      path: "assignedTo",
+      populate: {
+        path: "userId",
+        select: "name",
+      },
+    });
+
+    const totalTasks = tasks.length;
+
+    const completedTasks = tasks.filter(
+      (task) => task.status === "Done"
+    ).length;
+
+    const todoTasks = tasks.filter(
+      (task) => task.status === "Todo"
+    ).length;
+
+    const inProgressTasks = tasks.filter(
+      (task) => task.status === "In Progress"
+    ).length;
+
+    const overdueTasks = tasks.filter(
+      (task) =>
+        task.dueDate &&
+        task.status !== "Done" &&
+        new Date(task.dueDate) < new Date()
+    ).length;
+
+    const completionRate =
+      totalTasks === 0
+        ? 0
+        : Math.round((completedTasks / totalTasks) * 100);
+
+    const status = [
+      {
+        name: "Todo",
+        value: todoTasks,
+      },
+      {
+        name: "In Progress",
+        value: inProgressTasks,
+      },
+      {
+        name: "Done",
+        value: completedTasks,
+      },
+    ];
+
+    const priorities = ["Low", "Medium", "High", "Urgent"];
+
+    const priority = priorities.map((level) => ({
+      name: level,
+      value: tasks.filter(
+        (task) => task.priority === level
+      ).length,
+    }));
+
+    const workloadMap = {};
+
+    tasks.forEach((task) => {
+      const member =
+        task.assignedTo?.userId?.name || "Unassigned";
+
+      workloadMap[member] =
+        (workloadMap[member] || 0) + 1;
+    });
+
+    const memberWorkload = Object.entries(workloadMap).map(
+      ([member, tasks]) => ({
+        member,
+        tasks,
+      })
+    );
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        summary: {
+          totalTasks,
+          completedTasks,
+          todoTasks,
+          inProgressTasks,
+          overdueTasks,
+          completionRate,
+        },
+        status,
+        priority,
+        memberWorkload,
+      },
+    });
   } catch (error) {
     return res.status(500).json({
       success: false,

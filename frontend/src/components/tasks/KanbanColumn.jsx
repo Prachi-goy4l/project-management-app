@@ -6,7 +6,10 @@ import {
 
 import TaskCard from "./TaskCard";
 
-export default function KanbanColumn({ title, tasks }) {
+export default function KanbanColumn({
+  title,
+  tasks,
+}) {
   const { setNodeRef, isOver } = useDroppable({
     id: title,
   });
@@ -15,11 +18,11 @@ export default function KanbanColumn({ title, tasks }) {
     <div
       ref={setNodeRef}
       className={`rounded-lg p-4 min-h-[500px] transition
-        ${
-          isOver
-            ? "bg-blue-100 border-2 border-blue-500"
-            : "bg-slate-100"
-        }`}
+      ${
+        isOver
+          ? "bg-blue-100 border-2 border-blue-500"
+          : "bg-slate-100"
+      }`}
     >
       <h2 className="font-bold text-lg mb-4">
         {title}

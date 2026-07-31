@@ -25,6 +25,21 @@ const projectSchema = new mongoose.Schema(
       required: true,
     },
 
+    // NEW
+    projectKey: {
+      type: String,
+      required: true,
+      unique: true,
+      uppercase: true,
+      trim: true,
+    },
+
+    // NEW
+    taskSequence: {
+      type: Number,
+      default: 0,
+    },
+
     members: [
       {
         type: mongoose.Schema.Types.ObjectId,

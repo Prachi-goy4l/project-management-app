@@ -1,5 +1,5 @@
 import express from "express";
-import { createProject, getProjects,getProjectById,updateProject,archiveProject,addProjectMember,removeProjectMember } from "./project.controller.js";
+import { createProject,getProjectAnalytics, getProjects,getProjectById,updateProject,archiveProject,addProjectMember,removeProjectMember } from "./project.controller.js";
 import { authMiddleware } from "../../middlewares/auth.middleware.js";
 import { organizationMiddleware } from "../../middlewares/organization.middleware.js";
 import { projectMiddleware } from "../../middlewares/project.middleware.js";
@@ -18,6 +18,13 @@ router.get(
   authMiddleware,
   organizationMiddleware(),
   getProjects
+);
+
+router.get(
+  "/:projectId/analytics",
+  authMiddleware,
+  projectMiddleware(),
+  getProjectAnalytics
 );
 
 router.get(

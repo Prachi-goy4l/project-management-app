@@ -13,6 +13,18 @@ export const createTask = async (req, res) => {
         message: "Title is required",
       });
     }
+
+    project.taskSequence += 1;
+    await project.save();
+
+    const taskCode = `${project.projectKey}-${project.taskSequence}`;
+    
+    const lastTask = await Task.findOne({
+      projectId: project._id,
+      status: "Todo",
+    }).sort({ order: -1 });
+
+    const order = lastTask ? lastTask.order + 1 : 0;
     const task = await Task.create({
       title,
       description,
@@ -20,6 +32,8 @@ export const createTask = async (req, res) => {
       createdBy: req.user.id,
       priority,
       dueDate,
+      taskCode,
+      order,
     });
     const io = getIO();
 
@@ -52,7 +66,10 @@ export const getTasks = async (req, res) => {
           select: "name email",
         },
       })
-      .sort({ createdAt: -1 });
+      .sort({
+        status: 1,
+        order: 1,
+      });
 
     return res.status(200).json({
       success: true,
@@ -107,7 +124,7 @@ export const updateTask = async (req, res) => {
     if (description !== undefined) task.description = description;
     if (priority !== undefined) task.priority = priority;
     if (dueDate !== undefined) task.dueDate = dueDate;
-    
+
     await task.save();
     const updatedTask = await task.populate([
       {
@@ -233,7 +250,18 @@ export const updateTaskStatus = async (req, res) => {
         message: "Invalid status",
       });
     }
+    // Find the last task in the target column
+    const lastTask = await Task.findOne({
+      projectId: task.projectId,
+      status,
+      _id: { $ne: task._id },
+    })
+      .sort({ order: -1 })
+      .select("order");
+
+    // Update task
     task.status = status;
+    task.order = lastTask ? lastTask.order + 1 : 0;
 
     await task.save();
     await task.populate([
@@ -274,6 +302,48 @@ export const archiveTask = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "Task archived successfully",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+export const reorderTasks = async (req, res) => {
+  try {
+    const { tasks } = req.body;
+
+    if (!Array.isArray(tasks)) {
+      return res.status(400).json({
+        success: false,
+        message: "Tasks array is required",
+      });
+    }
+
+    await Promise.all(
+      tasks.map((task) => {
+        const taskId = task.id ?? task._id;
+
+        if (!taskId) {
+          return Promise.resolve();
+        }
+
+        return Task.findByIdAndUpdate(taskId, {
+          order: task.order,
+        });
+      })
+    );
+
+    const io = getIO();
+    const projectId = req.params.projectId || req.project?._id?.toString();
+
+    io.to(`project:${projectId}`).emit("task-reordered");
+
+    return res.status(200).json({
+      success: true,
+      message: "Tasks reordered successfully",
     });
   } catch (error) {
     return res.status(500).json({

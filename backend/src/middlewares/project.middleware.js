@@ -2,6 +2,8 @@ import Project from "../modules/projects/project.model.js";
 import Member from "../modules/members/members.model.js";
 export const projectMiddleware = () => {
   return async (req, res, next) => {
+    console.log("PROJECT MIDDLEWARE");
+  console.log(req.params);
     try {
       const { projectId } = req.params;
 

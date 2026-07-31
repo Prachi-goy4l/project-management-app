@@ -2,7 +2,7 @@ import express from "express";
 import { authMiddleware } from "../../middlewares/auth.middleware.js";
 import { projectMiddleware } from "../../middlewares/project.middleware.js";
 import { taskMiddleware } from "../../middlewares/task.middleware.js";
-import { createTask, getTasks, getTaskById, updateTask,assignTask,updateTaskStatus,archiveTask } from "./task.controller.js";
+import { createTask, getTasks, getTaskById, updateTask,assignTask,updateTaskStatus,archiveTask, reorderTasks, } from "./task.controller.js";
 
 const router = express.Router();
 
@@ -53,4 +53,12 @@ router.patch(
     taskMiddleware(),
     archiveTask
 )
+
+router.patch(
+  "/project/:projectId/reorder",
+  authMiddleware,
+  projectMiddleware(),
+  reorderTasks
+);
+
 export default router;
