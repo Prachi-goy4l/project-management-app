@@ -56,3 +56,11 @@ export const removeProjectMember = async (
 
   return response.data;
 };
+
+export const getProjectAnalytics = async (projectId) => {
+  const response = await api.get(
+    `/projects/${projectId}/analytics`
+  );
+
+  return response.data;
+};

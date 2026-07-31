@@ -9,6 +9,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import MembersPage from "@/pages/members/MembersPage";
 import AcceptInvitePage from "@/pages/invites/AcceptInvitePage";
 import TasksPage from "@/pages/tasks/TasksPage";
+import ProjectAnalytics from "@/pages/projects/ProjectAnalytics";
 function AppRoutes() {
   return (
     <BrowserRouter>
@@ -38,6 +39,10 @@ function AppRoutes() {
             path="/organizations/:organizationId/projects"
             element={<ProjectsPage />}
           />
+          <Route
+  path="/organizations/:organizationId/projects/:projectId/analytics"
+  element={<ProjectAnalytics />}
+/>
           <Route
             path="/organizations/:organizationId/members"
             element={<MembersPage />}

@@ -97,6 +97,7 @@ const Sidebar = ({ open, setOpen }) => {
                   }`
                 }
               >
+              
                 <Icon size={20} />
 
                 <span>{item.title}</span>

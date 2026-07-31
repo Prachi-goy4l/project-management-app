@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { NavLink, useNavigate, useParams } from "react-router-dom";
 
 import ProjectDialog from "@/components/projects/ProjectDialog";
 import {
@@ -67,6 +67,7 @@ export default function ProjectsPage() {
         </Button>
       </div>
 
+
       {/* Create Dialog */}
       <ProjectDialog
         open={openCreate}
@@ -122,7 +123,7 @@ export default function ProjectsPage() {
                   <p>Members: {project.members.length}</p>
                 </div>
 
-                <div className="flex gap-2 flex-wrap">
+                {/* <div className="flex gap-2 flex-wrap">
                   <Button
                     onClick={() =>
                       navigate(
@@ -150,7 +151,48 @@ export default function ProjectsPage() {
                   ) : (
                     <Button disabled>Archived</Button>
                   )}
-                </div>
+                </div> */}
+
+                <div className="flex gap-2 flex-wrap">
+  <Button
+    onClick={() =>
+      navigate(
+        `/organizations/${organizationId}/projects/${project._id}/tasks`
+      )
+    }
+  >
+    View Tasks
+  </Button>
+
+  <Button
+    variant="secondary"
+    onClick={() =>
+      navigate(
+        `/organizations/${organizationId}/projects/${project._id}/analytics`
+      )
+    }
+  >
+    Analytics
+  </Button>
+
+  <Button
+    variant="outline"
+    onClick={() => setEditingProject(project)}
+  >
+    Edit
+  </Button>
+
+  {project.status !== "Archived" ? (
+    <Button
+      variant="destructive"
+      onClick={() => handleArchive(project._id)}
+    >
+      Archive
+    </Button>
+  ) : (
+    <Button disabled>Archived</Button>
+  )}
+</div>
               </CardContent>
             </Card>
           ))}
