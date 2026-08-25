@@ -1,14 +1,16 @@
-import { NavLink, useParams } from "react-router-dom";
+import { NavLink, useParams, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
   Building2,
   FolderKanban,
   Users,
+  ChevronDown,
   X,
 } from "lucide-react";
 
 const Sidebar = ({ open, setOpen }) => {
   const { organizationId } = useParams();
+  const navigate = useNavigate();
 
   const menuItems = [
     {
@@ -21,7 +23,7 @@ const Sidebar = ({ open, setOpen }) => {
   if (organizationId) {
     menuItems.push(
       {
-        title: "Dashboard",
+        title: "Overview",
         path: `/organizations/${organizationId}/dashboard`,
         icon: LayoutDashboard,
       },
@@ -38,73 +40,152 @@ const Sidebar = ({ open, setOpen }) => {
     );
   }
 
+  const organizationName = "Current workspace";
+
   return (
     <>
-      {/* Mobile Overlay */}
+      {/* Mobile overlay */}
       {open && (
         <div
-          className="fixed inset-0 bg-black/40 z-40 md:hidden"
+          className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm md:hidden"
           onClick={() => setOpen(false)}
         />
       )}
 
       <aside
         className={`
-          fixed md:static
-          top-0 left-0
-          h-screen
-          w-64
-          bg-white
-          border-r
-          z-50
-          transition-transform
-          duration-300
+          fixed inset-y-0 left-0 z-50
+          flex w-64 flex-col
+          bg-[#202321]
+          text-slate-300
+          transition-transform duration-300
+          md:static md:translate-x-0
           ${
             open
               ? "translate-x-0"
-              : "-translate-x-full md:translate-x-0"
+              : "-translate-x-full"
           }
         `}
       >
-        {/* Mobile Header */}
-        <div className="flex items-center justify-between p-6 md:hidden">
-          <h1 className="text-2xl font-bold">PM</h1>
+        {/* ==================================================
+            BRAND
+        ================================================== */}
 
-          <button onClick={() => setOpen(false)}>
-            <X size={22} />
+        <div className="flex h-16 items-center justify-between border-b border-white/10 px-5">
+          <button
+            onClick={() => navigate("/organizations")}
+            className="flex items-center gap-3"
+          >
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500 text-sm font-black text-[#202321]">
+              PM
+            </div>
+
+            <span className="text-sm font-semibold tracking-tight text-white">
+              Project Manager
+            </span>
+          </button>
+
+          <button
+            onClick={() => setOpen(false)}
+            className="rounded-lg p-2 text-slate-400 hover:bg-white/10 hover:text-white md:hidden"
+          >
+            <X size={18} />
           </button>
         </div>
 
-        {/* Desktop Header */}
-        <div className="hidden md:block p-6">
-          <h1 className="text-2xl font-bold">PM</h1>
+        {/* ==================================================
+            WORKSPACE SWITCHER
+        ================================================== */}
+
+        {organizationId && (
+          <div className="px-3 pt-5">
+            <button
+              onClick={() => navigate("/organizations")}
+              className="group flex w-full items-center gap-3 rounded-xl border border-white/10 bg-white/[0.04] p-3 text-left transition hover:bg-white/[0.08]"
+            >
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald-500/15 text-xs font-bold text-emerald-400">
+                AC
+              </div>
+
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-xs font-semibold text-white">
+                  {organizationName}
+                </p>
+
+                <p className="mt-0.5 text-[10px] text-slate-500">
+                  Workspace
+                </p>
+              </div>
+
+              <ChevronDown
+                size={15}
+                className="text-slate-500 transition group-hover:text-slate-300"
+              />
+            </button>
+          </div>
+        )}
+
+        {/* ==================================================
+            NAVIGATION
+        ================================================== */}
+
+        <div className="px-3 pt-7">
+          <p className="mb-2 px-3 text-[10px] font-bold uppercase tracking-widest text-slate-600">
+            Workspace
+          </p>
+
+          <nav className="space-y-1">
+            {menuItems.map((item) => {
+              const Icon = item.icon;
+
+              return (
+                <NavLink
+                  key={item.path}
+                  to={item.path}
+                  onClick={() => setOpen(false)}
+                  className={({ isActive }) =>
+                    `
+                    group flex items-center gap-3 rounded-lg
+                    px-3 py-2.5 text-sm font-medium
+                    transition
+                    ${
+                      isActive
+                        ? "bg-emerald-500 text-[#17201b] shadow-sm"
+                        : "text-slate-400 hover:bg-white/[0.06] hover:text-white"
+                    }
+                  `
+                  }
+                >
+                  {({ isActive }) => (
+                    <>
+                      <Icon
+                        size={18}
+                        strokeWidth={isActive ? 2.5 : 2}
+                      />
+
+                      <span>{item.title}</span>
+                    </>
+                  )}
+                </NavLink>
+              );
+            })}
+          </nav>
         </div>
 
-        <nav className="space-y-2 px-3">
-          {menuItems.map((item) => {
-            const Icon = item.icon;
+        {/* ==================================================
+            BOTTOM
+        ================================================== */}
 
-            return (
-              <NavLink
-                key={item.path}
-                to={item.path}
-                onClick={() => setOpen(false)}
-                className={({ isActive }) =>
-                  `flex items-center gap-3 rounded-lg px-4 py-3 transition ${
-                    isActive
-                      ? "bg-blue-600 text-white"
-                      : "hover:bg-slate-100"
-                  }`
-                }
-              >
-              
-                <Icon size={20} />
+        <div className="mt-auto border-t border-white/10 p-4">
+          <button
+            onClick={() => navigate("/organizations")}
+            className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-slate-400 transition hover:bg-white/[0.06] hover:text-white"
+          >
+            <Building2 size={17} />
 
-                <span>{item.title}</span>
-              </NavLink>
-            );
-          })}
-        </nav>
+            <span>Switch workspace</span>
+          </button>
+        </div>
       </aside>
     </>
   );

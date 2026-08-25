@@ -1,36 +1,32 @@
 import { useState } from "react";
-import { Menu } from "lucide-react";
-import { Outlet } from "react-router-dom";
-import Sidebar from "@/components/Sidebar";
 
-const DashboardLayout = () => {
+import Sidebar from "@/components/layout/Sidebar";
+import Navbar from "@/components/layout/Navbar";
+import Breadcrumbs from "@/components/layout/Breadcrumbs";
+
+export default function DashboardLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="flex min-h-screen bg-slate-100">
+    <div className="flex min-h-screen bg-[#f7f8f5]">
       <Sidebar
         open={sidebarOpen}
         setOpen={setSidebarOpen}
       />
 
-      <main className="flex-1">
-        {/* Mobile Header */}
-        <div className="md:hidden flex items-center justify-between bg-white border-b px-4 py-3">
-          <button onClick={() => setSidebarOpen(true)}>
-            <Menu className="h-6 w-6" />
-          </button>
+      <div className="flex min-w-0 flex-1 flex-col">
+        <Navbar setOpen={setSidebarOpen} />
 
-          <h1 className="font-bold text-lg">
-            Project Manager
-          </h1>
-        </div>
+        <main className="min-w-0 flex-1">
+          <div className="px-4 py-5 sm:px-6 lg:px-8">
+            <div className="mb-6">
+              <Breadcrumbs />
+            </div>
 
-        <div className="p-6">
-          <Outlet />
-        </div>
-      </main>
+            {children}
+          </div>
+        </main>
+      </div>
     </div>
   );
-};
-
-export default DashboardLayout;
+}
