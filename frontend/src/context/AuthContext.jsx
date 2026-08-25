@@ -16,9 +16,9 @@ const [checkingAuth, setCheckingAuth] = useState(true); // Initial auth check
     const token = localStorage.getItem("token");
 
     if (!token) {
-    setCheckingAuth(false);
-    return;
-}
+      queueMicrotask(() => setCheckingAuth(false));
+      return;
+    }
 
     const loadUser = async () => {
       try {

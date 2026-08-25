@@ -86,7 +86,7 @@ export default function ProjectAnalytics() {
 
   if (!analytics) {
     return (
-      <div className="flex min-h-[400px] items-center justify-center p-6">
+      <div className="flex min-h-100 items-center justify-center p-6">
         <div className="text-center">
           <h2 className="text-lg font-semibold text-slate-900">
             Analytics unavailable
@@ -141,7 +141,7 @@ export default function ProjectAnalytics() {
             </div>
 
             {/* Completion indicator */}
-            <div className="min-w-[220px]">
+            <div className="min-w-55">
               <div className="mb-2 flex items-center justify-between">
                 <span className="text-xs font-medium text-slate-400">
                   Overall completion

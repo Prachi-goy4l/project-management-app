@@ -29,13 +29,15 @@ const OrganizationDialog = ({
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    if (mode === "edit" && organization) {
-      setName(organization.name);
-      setIndustry(organization.industry);
-    } else {
-      setName("");
-      setIndustry("");
-    }
+    queueMicrotask(() => {
+      if (mode === "edit" && organization) {
+        setName(organization.name);
+        setIndustry(organization.industry);
+      } else {
+        setName("");
+        setIndustry("");
+      }
+    });
   }, [mode, organization]);
 
   const handleSubmit = useCallback(async (e) => {

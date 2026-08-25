@@ -7,13 +7,12 @@ export default function Dashboard() {
   const { organizationId } = useParams();
 
   const [stats, setStats] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!organizationId);
 
   useEffect(() => {
     let cancelled = false;
 
     if (!organizationId) {
-      setLoading(false);
       return;
     }
 

@@ -1,10 +1,11 @@
 import { useState } from "react";
+import { Outlet } from "react-router-dom";
 
-import Sidebar from "@/components/layout/Sidebar";
-import Navbar from "@/components/layout/Navbar";
-import Breadcrumbs from "@/components/layout/Breadcrumbs";
+import Sidebar from "@/components/Sidebar";
+import Navbar from "@/layouts/Navbar";
+import Breadcrumbs from "@/layouts/Breadcrumbs";
 
-export default function DashboardLayout({ children }) {
+export default function DashboardLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
@@ -23,7 +24,7 @@ export default function DashboardLayout({ children }) {
               <Breadcrumbs />
             </div>
 
-            {children}
+            <Outlet />
           </div>
         </main>
       </div>

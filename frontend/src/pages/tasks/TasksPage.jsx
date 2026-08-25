@@ -213,7 +213,7 @@ export default function TasksPage() {
   }
 
   return (
-    <div className="mx-auto max-w-[1500px] space-y-6">
+    <div className="mx-auto max-w-375 space-y-6">
       {/* =====================================================
           HEADER
       ====================================================== */}
@@ -453,7 +453,7 @@ function TaskTable({
         <Table>
           <TableHeader>
             <TableRow className="border-b border-slate-200 bg-slate-50/70 hover:bg-slate-50/70">
-              <TableHead className="h-11 w-[110px] px-5 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+              <TableHead className="h-11 w-27.5 px-5 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
                 ID
               </TableHead>
 
@@ -477,7 +477,7 @@ function TaskTable({
                 Due
               </TableHead>
 
-              <TableHead className="h-11 w-[100px] text-right text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+              <TableHead className="h-11 w-25 text-right text-[10px] font-semibold uppercase tracking-wider text-slate-400">
                 Actions
               </TableHead>
             </TableRow>
@@ -540,7 +540,7 @@ function TaskRow({
           </p>
 
           {task.description && (
-            <p className="mt-1 max-w-[460px] truncate text-xs leading-5 text-slate-400">
+            <p className="mt-1 max-w-115 truncate text-xs leading-5 text-slate-400">
               {task.description}
             </p>
           )}
@@ -565,7 +565,7 @@ function TaskRow({
               {initials}
             </div>
 
-            <span className="max-w-[130px] truncate text-xs font-medium text-slate-600">
+            <span className="max-w-32.5 truncate text-xs font-medium text-slate-600">
               {assignedUser.name}
             </span>
           </div>

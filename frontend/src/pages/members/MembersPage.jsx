@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 
 import InviteDialog from "@/components/members/InviteDialog";
@@ -26,11 +26,7 @@ export default function MembersPage() {
 
   const [search, setSearch] = useState("");
 
-  useEffect(() => {
-    loadData();
-  }, [organizationId]);
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
       setLoading(true);
 
@@ -47,7 +43,11 @@ export default function MembersPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [organizationId]);
+
+  useEffect(() => {
+    queueMicrotask(loadData);
+  }, [loadData]);
 
   const handleDelete = async (inviteId) => {
     if (!window.confirm("Delete this invitation?")) return;
@@ -176,12 +176,11 @@ export default function MembersPage() {
           >
             Members
             <span
-              className={
+              className={`ml-2 rounded-full px-2 py-0.5 text-[10px] font-bold ${
                 activeTab === "members"
                   ? "bg-emerald-100 text-emerald-700"
                   : "bg-slate-100 text-slate-500"
-              }
-              className="ml-2 rounded-full px-2 py-0.5 text-[10px] font-bold"
+              }`}
             >
               {members.length}
             </span>

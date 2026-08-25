@@ -36,17 +36,19 @@ const ProjectDialog = ({
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (mode === "edit" && project) {
-      setName(project.name);
-      setDescription(project.description || "");
-      setStartDate(project.startDate?.substring(0, 10) || "");
-      setEndDate(project.endDate?.substring(0, 10) || "");
-    } else {
-      setName("");
-      setDescription("");
-      setStartDate("");
-      setEndDate("");
-    }
+    queueMicrotask(() => {
+      if (mode === "edit" && project) {
+        setName(project.name);
+        setDescription(project.description || "");
+        setStartDate(project.startDate?.substring(0, 10) || "");
+        setEndDate(project.endDate?.substring(0, 10) || "");
+      } else {
+        setName("");
+        setDescription("");
+        setStartDate("");
+        setEndDate("");
+      }
+    });
   }, [mode, project, open]);
 
   const handleSubmit = useCallback(async (e) => {

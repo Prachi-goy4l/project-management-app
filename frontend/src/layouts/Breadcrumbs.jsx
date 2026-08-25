@@ -9,7 +9,7 @@ export default function Breadcrumbs() {
     .split("/")
     .filter(Boolean);
 
-  const getLabel = (segment, index) => {
+  const getLabel = (segment) => {
     if (segment === "organizations") {
       return "Organizations";
     }
@@ -45,12 +45,10 @@ export default function Breadcrumbs() {
     return segment.charAt(0).toUpperCase() + segment.slice(1);
   };
 
-  let currentPath = "";
-
   return (
     <div className="flex items-center gap-1.5 text-xs text-slate-400">
       {segments.map((segment, index) => {
-        currentPath += `/${segment}`;
+        const currentPath = `/${segments.slice(0, index + 1).join("/")}`;
 
         const isLast = index === segments.length - 1;
 
@@ -68,14 +66,14 @@ export default function Breadcrumbs() {
 
             {isLast ? (
               <span className="font-medium text-slate-700">
-                {getLabel(segment, index)}
+                {getLabel(segment)}
               </span>
             ) : (
               <Link
                 to={currentPath}
                 className="transition hover:text-slate-700"
               >
-                {getLabel(segment, index)}
+                {getLabel(segment)}
               </Link>
             )}
           </div>

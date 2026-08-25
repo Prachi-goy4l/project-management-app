@@ -29,12 +29,12 @@ const TaskDialog = ({ mode = "create", task = null, onSuccess, organizationId: o
 
   useEffect(() => {
     if (!organizationId) {
-      setMembers([]);
+      queueMicrotask(() => setMembers([]));
       return;
     }
 
     const requestId = ++latestRequestIdRef.current;
-    setMembers([]);
+    queueMicrotask(() => setMembers([]));
 
     const loadMembers = async () => {
       try {

@@ -101,7 +101,7 @@ const Sidebar = ({ open, setOpen }) => {
           <div className="px-3 pt-5">
             <button
               onClick={() => navigate("/organizations")}
-              className="group flex w-full items-center gap-3 rounded-xl border border-white/10 bg-white/[0.04] p-3 text-left transition hover:bg-white/[0.08]"
+              className="group flex w-full items-center gap-3 rounded-xl border border-white/10 bg-white/4 p-3 text-left transition hover:bg-white/8"
             >
               <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald-500/15 text-xs font-bold text-emerald-400">
                 AC
@@ -151,7 +151,7 @@ const Sidebar = ({ open, setOpen }) => {
                     ${
                       isActive
                         ? "bg-emerald-500 text-[#17201b] shadow-sm"
-                        : "text-slate-400 hover:bg-white/[0.06] hover:text-white"
+                        : "text-slate-400 hover:bg-white/6 hover:text-white"
                     }
                   `
                   }
@@ -179,7 +179,7 @@ const Sidebar = ({ open, setOpen }) => {
         <div className="mt-auto border-t border-white/10 p-4">
           <button
             onClick={() => navigate("/organizations")}
-            className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-slate-400 transition hover:bg-white/[0.06] hover:text-white"
+            className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-slate-400 transition hover:bg-white/6 hover:text-white"
           >
             <Building2 size={17} />
 

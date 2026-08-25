@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import ProjectDialog from "@/components/projects/ProjectDialog";
@@ -25,11 +25,7 @@ export default function ProjectsPage() {
   const [statusFilter, setStatusFilter] = useState("All");
   const [openMenu, setOpenMenu] = useState(null);
 
-  useEffect(() => {
-    loadProjects();
-  }, [organizationId]);
-
-  const loadProjects = async () => {
+  const loadProjects = useCallback(async () => {
     try {
       const data = await getProjects(organizationId);
       setProjects(data.data);
@@ -39,7 +35,11 @@ export default function ProjectsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [organizationId]);
+
+  useEffect(() => {
+    queueMicrotask(loadProjects);
+  }, [loadProjects]);
 
   const handleArchive = async (projectId) => {
     setOpenMenu(null);
@@ -373,7 +373,7 @@ export default function ProjectsPage() {
                         {project.name}
                       </h2>
 
-                      <p className="mt-2 line-clamp-2 min-h-[40px] text-sm leading-5 text-slate-500">
+                      <p className="mt-2 line-clamp-2 min-h-10 text-sm leading-5 text-slate-500">
                         {project.description || "No description provided."}
                       </p>
                     </div>

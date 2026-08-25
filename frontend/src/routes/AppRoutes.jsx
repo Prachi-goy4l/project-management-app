@@ -1,19 +1,35 @@
 import ProtectedRoute from "@/components/ProtectedRoute";
 import DashboardLayout from "@/layouts/DashboardLayout";
-import Dashboard from "@/pages/Dashboard";
-import { LoginPage } from "@/pages/auth/LoginPage";
-import { RegisterPage } from "@/pages/auth/RegisterPage";
-import OrganizationsPage from "@/pages/organizations/OrganizationsPage";
-import ProjectsPage from "@/pages/projects/ProjectsPage";
+import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import MembersPage from "@/pages/members/MembersPage";
-import AcceptInvitePage from "@/pages/invites/AcceptInvitePage";
-import TasksPage from "@/pages/tasks/TasksPage";
-import ProjectAnalytics from "@/pages/projects/ProjectAnalytics";
+
+const Dashboard = lazy(() => import("@/pages/Dashboard"));
+const LoginPage = lazy(() =>
+  import("@/pages/auth/LoginPage").then((module) => ({
+    default: module.LoginPage,
+  })),
+);
+const RegisterPage = lazy(() =>
+  import("@/pages/auth/RegisterPage").then((module) => ({
+    default: module.RegisterPage,
+  })),
+);
+const OrganizationsPage = lazy(() => import("@/pages/organizations/OrganizationsPage"));
+const ProjectsPage = lazy(() => import("@/pages/projects/ProjectsPage"));
+const MembersPage = lazy(() => import("@/pages/members/MembersPage"));
+const AcceptInvitePage = lazy(() => import("@/pages/invites/AcceptInvitePage"));
+const TasksPage = lazy(() => import("@/pages/tasks/TasksPage"));
+const ProjectAnalytics = lazy(() => import("@/pages/projects/ProjectAnalytics"));
+
+function RouteFallback() {
+  return <div className="min-h-40 animate-pulse rounded-xl bg-slate-100" />;
+}
+
 function AppRoutes() {
   return (
     <BrowserRouter>
-      <Routes>
+      <Suspense fallback={<RouteFallback />}>
+        <Routes>
         <Route path="/" element={<Navigate to="/login" replace />} />
 
         <Route path="/login" element={<LoginPage />} />
@@ -50,7 +66,8 @@ function AppRoutes() {
           <Route path="/accept-invite/:token" element={<AcceptInvitePage />} />
           <Route path="/organizations" element={<OrganizationsPage />} />
         </Route>
-      </Routes>
+        </Routes>
+      </Suspense>
     </BrowserRouter>
   );
 }

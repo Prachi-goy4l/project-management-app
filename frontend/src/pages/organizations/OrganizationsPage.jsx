@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import {
@@ -18,11 +18,7 @@ export default function OrganizationsPage() {
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    loadOrganizations();
-  }, []);
-
-  const loadOrganizations = async () => {
+  const loadOrganizations = useCallback(async () => {
     try {
       const data = await getOrganizations();
       setOrganizations(data.data);
@@ -32,7 +28,11 @@ export default function OrganizationsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    queueMicrotask(loadOrganizations);
+  }, [loadOrganizations]);
 
   const handleDelete = async (id) => {
     setOpenMenu(null);
